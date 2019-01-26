@@ -1,24 +1,27 @@
 # icse2019
 
-This research artifact contains the Python code used for the paper Going
-<i>Farther Together: The Impact of Social Capital on Sustained
-Participation in Open Source.</i>
-The artifact can be used to select open source contributors, collect
-their GitHub projects, gather data such as contributors’ years of
-experience on GitHub, and projects’ age and size. 
-It can also be used to
-calculate social capital measures, including team familiarity, recurring
-cohesion, and heterogeneity of programming language expertise. 
-The final
-output is a csv file, each row of which is a data point used to evaluate
-the impact of social capital on sustained participation in open source.
-Each data point consists of information of one contributor’s one project
-during one three-month time window and all the social capital measures.
-The code was
-implemented in Python 2 and tested on a Linux machine. To run our code,
-one needs to install the Python pymysql, sqlalchemy, numpy, sklearn, and
-pandas libraries. One also needs to have a MySQL database for GHTorrent
-data.
+This research artifact contains the Python code used for the paper <I>Going Farther Together: The Impact of Social Capital on Sustained
+Participation in Open Source</i> by Qiu et al.
+
+The artifact can be used to select open source contributors, collect their GitHub projects, gather data such as contributors’ years of
+experience on GitHub, and projects’ age and size. It can also be used to calculate social capital measures, including team familiarity, recurring cohesion, and heterogeneity of programming language expertise. The final output is a csv file, each row of which is a data point used to evaluate the impact of social capital on sustained participation in open source. Each data point consists of information of one contributor’s one project during one three-month time window and all the social capital measures. The code was implemented in Python 2 and tested on a Linux machine. 
+
+To run our code, one needs to install the Python *pymysql*, *sqlalchemy*, *numpy*, *sklearn*, and *pandas* libraries. One also needs to have a MySQL database for <a href="http://ghtorrent.org/">GHTorrent</A> data.
+
+### BibTeX
+@inproceedings{QiuNBSV19,
+  author    = {Huilian Sophie Qiu and
+               Alexander Nolte and 
+               Anita Brown and 
+               Alexander Serebrenik and 
+               Bogdan Vasilescu},
+  title     = {Going Farther Together: The Impact of Social Capital on Sustained Participation in Open Source},
+  booktitle = {Proceedings of the 41st International Conference on Software Engineering,
+               {ICSE} 2019, Montreal, Canada},
+  pages     = {xx—xx},
+  year      = {2019},
+  publisher = {{IEEE}}
+}
 
 ### Required dependencies:
 
