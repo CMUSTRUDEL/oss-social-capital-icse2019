@@ -42,6 +42,7 @@ commits
 
 ght_namsor_s 
 
+TODO (Bogdan) Talk about how we used namsor
 
 ### Procedure of running the code: 
 1. Use `MySQL_queries/filter_valid_users` to find valid users. 
