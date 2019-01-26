@@ -1,0 +1,14 @@
+select distinct u.id 
+from ghtorrent.users as u, ghtorrent.commits as c, 
+namsor.ght_private as p, namsor.name_parse as np, 
+namsor.origin as o, 
+namsor.gender as g 
+where 
+g.firstName = np.firstName and g.lastName = np.lastName 
+and o.firstName = np.firstName 
+and o.lastName = np.lastName 
+and p.name = np.fullName and p.login = u.login 
+and length(p.name) - length(replace(p.name, ' ', '')) > 0 
+and c.author_id = u.id 
+and p.login NOT REGEXP BINARY '^[A-Z]{8}$' 
+and u.type = 'USR';
