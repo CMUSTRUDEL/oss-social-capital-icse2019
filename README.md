@@ -6,13 +6,17 @@ Sustained Participation in Open Source"](https://cmustrudel.github.io/papers/ics
 If you use the artifact, please consider citing:
 
 ```
-@inproceedings{qiu2018social,
-  author = {Qiu, Huilian and Nolte, Alexander and Brown, Anita and Serebrenik, Alexander and Vasilescu, Bogdan},
+@inproceedings{QiuNBSV19,
+  author = {Qiu, Huilian Sophie and 
+  		Nolte, Alexander and 
+  		Brown, Anita and 
+  		Serebrenik, Alexander and 
+  		Vasilescu, Bogdan},
   title = {Going Farther Together: The Impact of Social Capital on Sustained Participation in Open Source},
-  booktitle = {In Proceedings of the International Conference on Software Engineering (ICSE)},
+  booktitle = {Proceedings of the 41st International Conference on Software Engineering (ICSE) 2019, Montreal, Canada},
   note = {to appear},
   organization = {IEEE},
-  year = {2018},
+  year = {2019},
 }
 ```
 
