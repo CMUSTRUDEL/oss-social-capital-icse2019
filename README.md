@@ -1,4 +1,4 @@
-# Overview
+### Overview
 
 This research artifact accompanies our ICSE 2019 paper 
 ["Going Farther Together: The Impact of Social Capital on 
@@ -33,6 +33,8 @@ The code was implemented in Python 2 and tested on a Linux machine.
 To run our code, you need to install the Python `pymysql`, 
 `sqlalchemy`, `numpy`, `sklearn`, and `pandas` libraries. 
 You also need to have (access to) a MySQL dump of [GHTorrent](http://ghtorrent.org).
+
+Separately, we also include the [survey instrument](https://github.com/CMUSTRUDEL/oss-social-capital-icse2019/blob/master/survey_instrument.pdf) used in the paper.
 
 ### Required dependencies:
 
