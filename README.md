@@ -7,12 +7,12 @@ If you use the artifact, please consider citing:
 
 ```
 @inproceedings{qiu2018social,
-  author	= {Qiu, Huilian and Nolte, Alexander and Brown, Anita and Serebrenik, Alexander and Vasilescu, Bogdan},
-  title	= {Going Farther Together: The Impact of Social Capital on Sustained Participation in Open Source},
-  booktitle	= {In Proceedings of the International Conference on Software Engineering (ICSE)},
-  note	= {to appear},
-  organization	= {IEEE},
-  year	= {2018},
+  author = {Qiu, Huilian and Nolte, Alexander and Brown, Anita and Serebrenik, Alexander and Vasilescu, Bogdan},
+  title = {Going Farther Together: The Impact of Social Capital on Sustained Participation in Open Source},
+  booktitle = {In Proceedings of the International Conference on Software Engineering (ICSE)},
+  note = {to appear},
+  organization = {IEEE},
+  year = {2018},
 }
 ```
 
