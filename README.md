@@ -88,3 +88,7 @@ classifier divides the name into n-grams and uses them as
 additional features.
 The result will be written to `data/gender.csv`, which will later 
 be used in `sample_user.py` for balance sampling as described above.
+
+## License
+
+[CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/)
