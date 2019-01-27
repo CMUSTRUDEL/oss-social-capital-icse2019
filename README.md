@@ -1,4 +1,4 @@
-### Overview
+## Overview
 
 This research artifact accompanies our ICSE 2019 paper 
 ["Going Farther Together: The Impact of Social Capital on 
@@ -7,42 +7,33 @@ If you use the artifact, please consider citing:
 
 ```
 @inproceedings{qiu2018social,
-  author	  	= {Qiu, Huilian and Nolte, Alexander and Brown, Anita and Serebrenik, Alexander and Vasilescu, Bogdan},
-  title 	  	= {Going Farther Together: The Impact of Social Capital on Sustained Participation in Open Source},
-  booktitle 	= {In Proceedings of the International Conference on Software Engineering (ICSE)},
-  note     		= {to appear},
-  organization 	= {IEEE},
-  year      	= {2018},
+  author	= {Qiu, Huilian and Nolte, Alexander and Brown, Anita and Serebrenik, Alexander and Vasilescu, Bogdan},
+  title	= {Going Farther Together: The Impact of Social Capital on Sustained Participation in Open Source},
+  booktitle	= {In Proceedings of the International Conference on Software Engineering (ICSE)},
+  note	= {to appear},
+  organization	= {IEEE},
+  year	= {2018},
 }
 ```
 
-This repository contains the Python code used for our study.
-The code can be used to select open source contributors, collect 
-their GitHub projects, gather data such as contributors’ years of
-experience on GitHub, and projects’ age and size. 
-The code also calculates social capital measures, including 
-*team familiarity*, *recurring cohesion*, and *heterogeneity 
-of programming language expertise*. 
+The artifact consists of three main parts:
 
-The final output is a csv file, each row of which is a data point 
-used in our survival analysis.
-Each row consists of information *per person per project per quarter*
-(three-month time window), including all the social capital measures.
+1. **Data collection** scripts, written in Python.
 
-The code was implemented in Python 2 and tested on a Linux machine. 
-To run our code, you need to install the Python `pymysql`, 
-`sqlalchemy`, `numpy`, `sklearn`, and `pandas` libraries. 
-You also need to have (access to) a MySQL dump of [GHTorrent](http://ghtorrent.org).
+	The code can be used to select open source contributors, collect their GitHub projects, gather data such as contributors’ years of experience on GitHub, and projects’ age and size. The code also calculates social capital measures, including *team familiarity*, *recurring cohesion*, and *heterogeneity of programming language expertise*. 
 
-Separately, we also include the [survey instrument](https://github.com/CMUSTRUDEL/oss-social-capital-icse2019/blob/master/survey_instrument.pdf) used in the paper.
+	The final output is a csv file, each row of which is a data point used in our survival analysis. Each row consists of information *per person per project per quarter* (three-month time window), including all the social capital measures.
 
-### Required dependencies:
+	The code was implemented in Python 2 and tested on a Linux machine. Required dependencies: `pymysql`, `sqlalchemy`, `numpy`, `scipy`, `sklearn`, and `pandas`. You also need to have (access to) a MySQL dump of [GHTorrent](http://ghtorrent.org).
 
-- pymysql
-- pickle
-- sqlalchemy
-- pandas
-- scipy
+
+2. The [**survey instrument**](https://github.com/CMUSTRUDEL/oss-social-capital-icse2019/blob/master/survey_instrument.pdf) used in the paper.
+
+3. **Data analysis** scripts, written in R.
+
+We give more details on data collection scripts next.
+
+## Data Collection
 
 ### Tables in the MySQL database:
 
