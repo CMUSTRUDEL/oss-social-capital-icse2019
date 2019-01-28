@@ -106,7 +106,7 @@ code to calculate reliability measures, correlations, plots, and conduct logisti
 
 The models as reported in the paper are created by the
 [`survival_analysis.R`](https://github.com/CMUSTRUDEL/oss-social-capital-icse2019/blob/master/R/survival_analysis.R) R script.
-We have also included an annonymous version of data we used for this paper in [data/surv_data_anonymized.csv.zip](surv_data_anonymized.csv.zip)
+We have also included an annonymous version of data we used for this paper in [data/surv_data_anonymized.csv.zip](data/surv_data_anonymized.csv.zip)
 Each row in the csv file is one data point in our model. It represents one user's activity in one project during one three-month window.
 The csv file consists of 34 columns. Those with prefix "u_" are information about users and those start with "p_" are about projects:
 - `u_age` is the number of three-month windows since the user's first activity.
