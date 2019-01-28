@@ -106,6 +106,43 @@ code to calculate reliability measures, correlations, plots, and conduct logisti
 
 The models as reported in the paper are created by the
 [`survival_analysis.R`](https://github.com/CMUSTRUDEL/oss-social-capital-icse2019/blob/master/R/survival_analysis.R) R script.
+We have also included an annonymous version of data we used for this paper in [data/surv_data_anonymized.csv.zip](surv_data_anonymized.csv.zip)
+Each row in the csv file is one data point in our model. It represents one user's activity in one project during one three-month window.
+The csv file consists of 34 columns. Those with prefix "u_" are information about users and those start with "p_" are about projects:
+- `u_age` is the number of three-month windows since the user's first activity.
+- `u_commits_to_date` is the number of commits made by this user across all projects up to that three-month window.
+- `u_email` is the md5 hash of the user's email address.
+- `u_follower` is the number of followers the user had up to that three-month window.
+- `u_gender` is the user's gender.
+- `u_id` is the id of the user in the GHTorrent dataset `users` table.
+- `u_login` is the md5 has of the user's login.
+- `u_nichewidth` is the number of programming languages that the user had used up to that three-month window.
+- `u_projects_to_date` is the number of projects to which the user had submitted commits up to that three-month window.
+- `u_temp_failure` is a binary indicator of whether the user had been inactive for half a year (2 three-month windows).
+- `u_temp_failure_1_year` is a binary indicator of whether the user had been inactive for a year (4 three-month windows).
+- `u_window_active_to_date` is the number of three-month windows during whith the user had submitted commits.
+- `window_num` represents the current three-month window. 2008 Jan to 2008 Mar will be `window_num = 1`.
+- `owner_company` is a binary indicator of whether the owner of the repository displays their company in their profile.
+- `owner_gender` is the repository owners' genders, with -1 representing male, 1 female, and 0 unknown.
+- `p_id` is the id of the project in the GHTorrent dataset `projects` table.
+- `u_is_major` is a binary indicator of whether the user is a major contributor (more than 5% commits) to that project.
+- `u_is_owner` is a binary indicator of whether the user is the owner of that project.
+- `u_pr_merge` is a binary indicator of whether the user can merge pull request in that project.
+- `p_age` is the number of three-month windows since the creation of that project.
+- `p_div_langdenom` is the value of the programming language diversity of that project `p_id` in that window `window_num`.
+- `p_fam_no_decay` is the value of the team familiarity of that project in that window.
+- `p_lang` is the major programming language of that project.
+- `p_num_commits` is the number of commits of that project in that window.
+- `p_num_commits_to_date` is the total number of commits of that project since is creation.
+- `p_num_stars` is the project's number of stars in that window.
+- `p_num_users_to_date` is the number of users who had sent commits to the project up to that window.
+- `p_owner` is the project owner's id in GHTorrent dataset `users` table.
+- `p_recurring_co` is the value of the recurring cohesion of that project in that window.
+- `p_sharenewcomers` is the percentage of new GitHub users out of the users who had sent commits to that project.
+- `p_sharenewcomers` is the percentage of new users to that project out of the users who had sent commits to that project.
+- `p_team_size`
+- `p_windows_active_to_date` is the number of three-month windows that the project received commits.
+- `window` is the date format of three-month window.
 
 ## License
 
