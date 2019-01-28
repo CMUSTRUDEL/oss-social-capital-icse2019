@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/167657061.svg)](https://zenodo.org/badge/latestdoi/167657061)
+
 ## Overview
 
 This research artifact accompanies our ICSE 2019 paper 
@@ -33,7 +35,7 @@ The artifact consists of three main parts:
 
 2. The [**survey instrument**](https://github.com/CMUSTRUDEL/oss-social-capital-icse2019/blob/master/survey_instrument.pdf) used in the paper.
 
-3. **Data analysis** scripts, written in R.
+3. **Survey analysis** scripts, written in R.
 
 We give more details on data collection scripts next.
 
@@ -92,6 +94,12 @@ classifier divides the name into n-grams and uses them as
 additional features.
 The result will be written to `data/gender.csv`, which will later 
 be used in `sample_user.py` for balance sampling as described above.
+
+## Survey analysis
+
+The survey analysis script can be found in the R subfolder. It contains
+code to calculate reliability measures, correlations, variable plots and conduct
+logistic regression analysis on the collected survey data.
 
 ## License
 
