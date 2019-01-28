@@ -1,3 +1,6 @@
+[![DOI](https://zenodo.org/badge/167657061.svg)](https://zenodo.org/badge/latestdoi/167657061)
+reStructedText
+
 ## Overview
 
 This research artifact accompanies our ICSE 2019 paper 
