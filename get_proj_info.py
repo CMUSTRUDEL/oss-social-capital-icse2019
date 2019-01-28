@@ -155,7 +155,6 @@ def get_info(p):
     # otherwise it woule take tooooo long to calculate team familiarity
     big_repos.add(p)
     return []   
-  #print proc_id, "contr", p, contr_lens
 
   # watchers
   cur_stars = watchers.loc[watchers["project_id"].isin(forks)]
@@ -167,11 +166,6 @@ def get_info(p):
     cur_win = int(cur_stars.iloc[i][["window"]])
     if cur_win > 0 and cur_win < 37:  
       stars_count[cur_win-1] = int(cur_stars.iloc[i][["sum"]])
-  #print proc_id, "star", p, stars_count
-
-  # get users' projects per window to calculate team familiarity, lang
-  # diversity, and recurring cohesion
-  #contr_list_win = get_user_dict(p, helper.session)
 
   # create dataframe
   p_dicts = []
@@ -185,7 +179,7 @@ def get_info(p):
     p_dict["p_age"] = act_win - min(act_wins)
     p_dict["p_windows_active_to_date"] = win_index + 1
     p_dict["p_team_size"] = contr_lens[act_win]
-    p_dict["p_num_users_to_date"] = sum(new_contr_lens[:act_win])
+    p_dict["p_num_users_to_date"] = sum(new_contr_lens[:act_win+1])
     p_dict["p_num_stars"] = sum(stars_count[:act_win])
     p_dict["p_num_commits"] = num_commits_win[act_win]
     p_dict["p_num_commits_to_date"] = sum(num_commits_win[:act_win+1])
@@ -221,31 +215,7 @@ def get_info(p):
     #print proc_id, p, p_dict, datetime.now()
     out.write(str(p_dict)+",")
     out.write(str(datetime.now())+"\n")
-  #out.write("\n".join([str(p_d) for p_d in p_dicts])+"\n")
-  #results = pd.concat([results, pd.DataFrame(p_dicts)]) 
-  #session.commit()
-
   return p_dicts
-
-'''
-for i in range(6):
-  print "pid:", i*10000, (i+1)*10000
-  p_ids_sub = pids[(i-1)*10000:i*10000]
-  pool = Pool(num_proc)
-  results = []
-  results = pool.map(get_info, p_ids_sub)
-  pool.close()
-  pool.join()
-  result_f = open("result_f"+str(i), "wb")
-  pickle.dump(results, result_f)
-  result_f.close()
-
-
-  results = [dict_item for dict_lists in results for dict_item in dict_lists]
-  results = pd.DataFrame(results)
-  results.to_csv("data/proj_results"+str(i)+".csv", index = False)
-'''
-
 
 results = []
 num_iter = len(pids) / 10000 
@@ -261,12 +231,6 @@ for i in range(num_iter+1):
   result_f = open("result_f_"+str(i), "wb")
   pickle.dump(results_i, result_f)
   result_f.close()
-
-'''
-results = []
-for p in pids:
-  results.append(get_info(p))
-'''
 
 results = pd.DataFrame(results)
 results.to_csv("data/results_proj.csv", index = False, encoding = "utf-8")
