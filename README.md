@@ -1,5 +1,4 @@
 [![DOI](https://zenodo.org/badge/167657061.svg)](https://zenodo.org/badge/latestdoi/167657061)
-reStructedText
 
 ## Overview
 
