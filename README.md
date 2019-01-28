@@ -95,11 +95,17 @@ additional features.
 The result will be written to `data/gender.csv`, which will later 
 be used in `sample_user.py` for balance sampling as described above.
 
-## Survey analysis
+## Data analysis
 
-The survey analysis script can be found in the R subfolder. It contains
-code to calculate reliability measures, correlations, variable plots and conduct
-logistic regression analysis on the collected survey data.
+### Survey 
+
+The survey analysis script is [`survey.R`](https://github.com/CMUSTRUDEL/oss-social-capital-icse2019/blob/master/R/survey.R). It contains
+code to calculate reliability measures, correlations, plots, and conduct logistic regression analysis on the collected survey data.
+
+### Survival analysis
+
+The models as reported in the paper are created by the
+[`survival_analysis.R`](https://github.com/CMUSTRUDEL/oss-social-capital-icse2019/blob/master/R/survival_analysis.R) R script.
 
 ## License
 
