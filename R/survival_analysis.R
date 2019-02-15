@@ -21,8 +21,8 @@ surv_data <- read.csv("surv_data.csv", sep=",", stringsAsFactors = FALSE)
 # Sanity checks for raw data
 nrow(surv_data)
 names(surv_data)
-length(unique(surv_data$u_id)) # 58,214 users
-length(unique(surv_data$p_id)) # 515,034 repos
+length(unique(surv_data$u_id)) 
+length(unique(surv_data$p_id)) 
 
 # Basic gender stats
 table(sqldf("select u_id, u_gender from surv_data group by u_id")$u_gender)
