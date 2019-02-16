@@ -1,5 +1,3 @@
-# Author: Bogdan Vasilescu
-
 library(survival)
 library(coxme)
 library(car)
@@ -15,7 +13,7 @@ library(survminer)
 
 ## Read data
 surv_data <- read.csv("surv_data.csv", sep=",", stringsAsFactors = FALSE) 
-
+table(surv_data$u_gender)
 ## Preliminaries
 
 # Sanity checks for raw data
@@ -80,35 +78,47 @@ surv_data$u_months_active_start = surv_data$u_months_active - 3
 
 # Label as "abandoned" those users who stopped contributing for late_abandoners year
 surv_data$u_dead = surv_data$u_temp_failure_1_year
+surv_data$u_dead_half = surv_data$u_temp_failure
 
 # Compute helper stats per user, aggregating over time windows
 helper_stats = sqldf("select u_id, u_gender, 
-               count(distinct window_num) as 'num_windows',
-               count(distinct p_id) as 'num_projects',
-               max(p_team_size) as 'max_team_size',
-               max(window_num) as 'last_window',
-               min(window_num) as 'first_window',
-               sum(u_dead) as 'num_temp_deaths',
-               max(u_months_active) as 'months_active'
-               from surv_data 
-               group by u_id")
+                     count(distinct window_num) as 'num_windows',
+                     count(distinct p_id) as 'num_projects',
+                     max(p_team_size) as 'max_team_size',
+                     max(u_projects_to_date) as 'num_projs',
+                     max(window_num) as 'last_window',
+                     min(window_num) as 'first_window',
+                     sum(u_dead) as 'num_temp_deaths',
+                     sum(u_dead_half) as 'num_temp_deaths_half',
+                     max(u_months_active) as 'months_active'
+                     from surv_data 
+                     group by u_id")
 
 # Some people in the data have more than one 1-year inactivity gap. 
 # We will filter them out from subsequent modeling
 nrow(helper_stats)
 nrow(helper_stats[helper_stats$num_temp_deaths >= 1,])
+nrow(helper_stats[helper_stats$num_temp_deaths_half >= 1,])
 nrow(helper_stats[helper_stats$num_temp_deaths > 1,])
+table(helper_stats[helper_stats$num_temp_deaths > 1, ]$u_gender)
+mean(helper_stats$months_active)
+mean(helper_stats$num_projects)
+median(helper_stats$num_projects)
+helper_female = helper_stats[helper_stats$u_gender=="Female",]
+helper_male = helper_stats[helper_stats$u_gender=="Male", ]
+cliff.delta(helper_female$months_active, helper_male$months_active)
+cliff.delta(helper_female$num_projects, helper_male$num_projects)
 
 when_died_last = sqldf("select u_id, 
-                          max(window_num) as 'when_died_last', 
-                          u_windows_active_to_date 
+                       max(window_num) as 'when_died_last', 
+                       u_windows_active_to_date 
                        from surv_data
                        where u_dead=1
                        group by u_id")
 # View(when_died_last)
 last_window = sqldf("select u_id, 
-                          max(window_num) as 'last_window', 
-                          u_windows_active_to_date 
+                    max(window_num) as 'last_window', 
+                    u_windows_active_to_date 
                     from surv_data
                     group by u_id")
 # View(last_window)
@@ -121,8 +131,8 @@ died_last_window = merge(when_died_last, last_window)
 # - num_temp_deaths==1 means they died exactly one time (death = 1 year of inactivity)
 # - the last long conditional checks that they died in their last window
 dead_on_time = helper_stats[helper_stats$first_window>=17 & helper_stats$first_window!=36 &
-                        ((helper_stats$num_temp_deaths==1 & 
-                            helper_stats$u_id %in% died_last_window[died_last_window$when_died_last==died_last_window$last_window,]$u_id)),]
+                              ((helper_stats$num_temp_deaths==1 & 
+                                  helper_stats$u_id %in% died_last_window[died_last_window$when_died_last==died_last_window$last_window,]$u_id)),]
 
 nrow(dead_on_time)
 table(dead_on_time$u_gender)
@@ -130,9 +140,9 @@ table(dead_on_time$u_gender)
 
 # This adds to the data the people who never died, as controls
 alive_or_dead_on_time = helper_stats[helper_stats$first_window>=17 & helper_stats$first_window!=36 &
-                                 ((helper_stats$num_temp_deaths==1 & 
-                                     helper_stats$u_id %in% died_last_window[died_last_window$when_died_last==died_last_window$last_window,]$u_id) |
-                                    helper_stats$num_temp_deaths==0),]
+                                       ((helper_stats$num_temp_deaths==1 & 
+                                           helper_stats$u_id %in% died_last_window[died_last_window$when_died_last==died_last_window$last_window,]$u_id) |
+                                          helper_stats$num_temp_deaths==0),]
 nrow(alive_or_dead_on_time)
 # View(alive_or_dead_on_time)
 
@@ -258,7 +268,13 @@ ggsurvplot(
   ggtheme = theme_light()
 )
 ggsave("base-survival.pdf", width = 6, height = 3)
-
+survdiff(Surv(#filtered.aggregate$u_months_active_start, 
+  filtered.aggregate$u_months_active, 
+  filtered.aggregate$u_dead) ~ u_gender_female, data = filtered.aggregate)
+survfit(Surv(filtered.aggregate$u_months_active_start, 
+             filtered.aggregate$u_months_active, 
+             filtered.aggregate$u_dead) ~ u_gender_female, 
+        data = filtered.aggregate)
 # Split data into early disengagers vs the rest
 # Model the two groups separately, as they might be affected differently by different factors
 
@@ -269,7 +285,7 @@ length(early_deaths)
 
 # Non-early deaths
 late_abandoners = subset(filtered.aggregate,
-           !(u_id %in% early_deaths))
+                         !(u_id %in% early_deaths))
 nrow(filtered.aggregate)
 nrow(late_abandoners)
 
@@ -295,17 +311,18 @@ hist(log(late_abandoners$p_recurring_co+1))
 table(late_abandoners$p_recurring_co > exp(6))
 
 late_abandoners.short = subset(late_abandoners, 
-                u_followers < exp(7)
-                 & p_num_stars < exp(7)
-                 & u_nichewidth > 0
-                 & u_nichewidth < exp(3)
-                 & p_team_size < exp(6)
-                 & p_fam_no_decay < exp(3)
-                 & p_team_size > 0
-                 & p_recurring_co < exp(6)
-                 & p_team_size >= 1
+                               u_followers < exp(7)
+                               & p_num_stars < exp(7)
+                               & u_nichewidth > 0
+                               & u_nichewidth < exp(3)
+                               & p_team_size < exp(6)
+                               & p_fam_no_decay < exp(3)
+                               & p_team_size > 0
+                               & p_recurring_co < exp(6)
+                               & p_team_size >= 1
 )
 nrow(late_abandoners.short)
+length(unique(late_abandoners.short$u_id))
 
 # Check effects
 
@@ -346,17 +363,17 @@ boxplot(list(F = late_abandoners.short[late_abandoners.short$u_gender_female==TR
 m_ph_base_int <- coxph(Surv(u_months_active_start,
                             u_months_active,
                             u_dead == 1) ~
-                       log(u_followers+1)
-                     + log(p_num_stars+1)
-                     + log(u_commits_to_date+1)
-                     + (u_is_major>0)
-                     + (u_is_owner>0)
-                     + p_sharenewcomers_this
-                     + log(u_nichewidth+1)
-                     + p_lang_div * u_gender_female
-                     + log(p_fam_no_decay+1) * u_gender_female
-                     + log(p_recurring_co+1) * u_gender_female
-                     , data=late_abandoners.short)
+                         log(u_followers+1)
+                       + log(p_num_stars+1)
+                       + log(u_commits_to_date+1)
+                       + (u_is_major>0)
+                       + (u_is_owner>0)
+                       + p_sharenewcomers_this
+                       + log(u_nichewidth+1)
+                       + p_lang_div * u_gender_female
+                       + log(p_fam_no_decay+1) * u_gender_female
+                       + log(p_recurring_co+1) * u_gender_female
+                       , data=late_abandoners.short)
 
 summary(m_ph_base_int)
 
@@ -387,7 +404,7 @@ options(datadist="dd")
 # Model the early abandoners separately
 
 early_abandoners = subset(filtered.aggregate,
-           u_months_active=3)
+                          u_months_active=3)
 
 # Filter out outliers
 
@@ -423,6 +440,7 @@ early_abandoners.short = subset(early_abandoners,
 
 nrow(early_abandoners)
 nrow(early_abandoners.short)
+length(unique(early_abandoners.short$u_id))
 
 table(early_abandoners.short$u_dead)
 
@@ -448,4 +466,5 @@ vif(m_ph_base_int_early)
 summary(m_ph_base_int_early)
 
 anova(m_ph_base_int_early)
+Anova(m_ph_base_int_early, type=2)
 
