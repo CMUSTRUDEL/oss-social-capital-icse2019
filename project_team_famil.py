@@ -1,8 +1,9 @@
 from utils import *
 import numpy as np
 from datetime import datetime
+from dbs import *
 
-def get_team_famil(p, session, commits, contributors, contr_projs_win,
+def get_team_famil(p, contributors, contr_projs_win,
                     proj_contrs_count, win):
   contributors = list(contributors)
   team_size = len(contributors)
