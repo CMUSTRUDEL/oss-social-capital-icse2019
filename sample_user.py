@@ -31,7 +31,7 @@ male = [l for l in lines if l[-1] == "-1"]
 sample_size = len(female)
 sampled_male = random.sample(male, sample_size)
 f = open("new_100000/data/sampled_user_gender.csv", "w")
-fid = open("new_100000/data/uid_new.list", "w")
+fid = open("new_100000/data/uid.list", "w")
 for fe in female:
   f.write(",".join(fe) + "\n")
   fid.write(fe[0] + "\n")
