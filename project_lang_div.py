@@ -1,5 +1,6 @@
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
+from dbs import *
 
 # calculates language diversity of a project in a window
 # input: 
@@ -8,7 +9,7 @@ import numpy as np
 # contributor:projects mapping in a window prior to win
 # win: the number of current window, 0 indexed
 # output: language diversity [0,1] of this project in this window.
-def get_lang_div(session, projects, contributors, contr_projs_win, win, langs):
+def get_lang_div(pid, contributors, contr_projs_win, win, langs):
   team_size = len(contributors)
   if team_size == 0:
     return 0 
