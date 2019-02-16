@@ -60,7 +60,8 @@ Details about these files are in the following section.
 
 3. Run [`setup.py`](https://github.com/CMUSTRUDEL/oss-social-capital-icse2019/blob/master/setup.py), which reads the files `dict/alias_map_b.dict`,
 `dict/reverse_alias_map_b.dict`, and `data/uid.list`, and generates files
-`data/pid.list`, `data/all_contributors.list`, `dict/contr_projs.dict`,
+`data/pid.list`, `data/all_contributors.list`,
+`data/watchers_monthly_counts_win.csv`, `dict/contr_projs.dict`,
 `data/all_projs.list`, and `dict/proj_contrs_count.dict`.
 
 4. Run [`get_user_info.py`](https://github.com/CMUSTRUDEL/oss-social-capital-icse2019/blob/master/get_user_info.py), [`get_proj_info.py`](https://github.com/CMUSTRUDEL/oss-social-capital-icse2019/blob/master/get_proj_info.py), and [`get_user_proj_info.py`](https://github.com/CMUSTRUDEL/oss-social-capital-icse2019/blob/master/get_user_proj_info.py). They write to `data/results_users.csv`, `data/results_proj.csv`, and `data/results_user_proj.csv` repectively.

@@ -1,9 +1,6 @@
 from datetime import datetime
 from math import floor
 from multiprocessing import *
-from project_lang_div import get_lang_div 
-from project_recur_co import get_recur_co
-from project_team_famil import get_team_famil
 from sqlalchemy import create_engine, MetaData, Table
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql import select
@@ -63,7 +60,7 @@ langs = ["JavaScript", "Java", "Python", "CSS", "PHP", "Ruby", "C++",
   "PowerShell", "Erlang", "Visual Basic", "Processing", "Assembly", "Other"]
 print "Done setting up"
 
-url = "mysql://sophie:"+pswd+"@localhost/ghtorrent?charset=utf8mb4"
+url = "mysql://sophie:"+pswd+"@localhost/ghtorrent-2018-03?charset=utf8mb4"
 engine = create_engine(url, pool_size = num_proc, pool_recycle = 3600)
 Session = sessionmaker(bind = engine)
 metadata = MetaData(engine)
@@ -101,16 +98,16 @@ def get_info(u_id):
   act_wins = [win for win in range(36) if len(u_projs[win]) > 0]
   for act_win in act_wins:
     for p_id in u_projs[act_win]:
-      if p_id in big_repos:
+      if p_id in big_repos or p_id == -1:
         continue
       # no need to get root, we already stored roots
       # get the list of forks
       forks = tuple(root_forks[p_id])
 
       # count the number of commits made by this contributor to this project
-      [begin, end] = windows[act_win].split(" ")
-      begin = datetime.strptime(begin, "%Y-%m-%d")
-      end = datetime.strptime(end, "%Y-%m-%d")
+      [begin, end] = windows[act_win].split("_")
+      begin = datetime.strptime(begin, "%Y-%m-%d %H:%M:%S")
+      end = datetime.strptime(end, "%Y-%m-%d %H:%M:%S")
 
       r = session.query(commits).filter(commits.c.author_id.in_(aliases),
                                     commits.c.project_id.in_(forks),
@@ -185,7 +182,7 @@ def get_info(u_id):
         u_p_dict["u_pr_merge"] = 1
 
       u_p_dicts.append(u_p_dict)
-      #print proc_id, p, p_dict, datetime.now()
+      #print proc_id, u_id, u_p_dict, datetime.now()
   #results = pd.concat([results, pd.DataFrame(p_dicts)]) 
   #session.commit()
   conns.close()

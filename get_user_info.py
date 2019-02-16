@@ -1,13 +1,10 @@
 from datetime import datetime
 from math import floor
 from multiprocessing import *
-from project_lang_div import get_lang_div 
-from project_recur_co import get_recur_co
-from project_team_famil import get_team_famil
 from sqlalchemy import create_engine, MetaData, Table
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql import select
-from utils import *
+#from utils import *
 import logging
 import numpy as np
 import os
@@ -40,6 +37,8 @@ f = open("dict/reverse_alias_map_b.dict")
 re_alias = pickle.load(f)
 f.close()
 
+begin = datetime.strptime("2008-01-01", "%Y-%m-%d")
+end = datetime.strptime("2016-12-31", "%Y-%m-%d")
 langs = ["JavaScript", "Java", "Python", "CSS", "PHP", "Ruby", "C++", 
   "C", "Shell", "C#", "Objective-C", "R", "VimL", "Go", "Perl", 
   "CoffeeScript", "Tex", "Swift", "Scala", "Emacs Lisp", "Haskell", 
@@ -47,7 +46,7 @@ langs = ["JavaScript", "Java", "Python", "CSS", "PHP", "Ruby", "C++",
   "PowerShell", "Erlang", "Visual Basic", "Processing", "Assembly", "Other"]
 print "Done setting up"
 
-url = "mysql://sophie:"+pswd+"@localhost/ghtorrent?charset=utf8mb4"
+url = "mysql://sophie:"+pswd+"@localhost/ghtorrent-2018-03?charset=utf8mb4"
 engine = create_engine(url, pool_size = num_proc, pool_recycle = 3600)
 Session = sessionmaker(bind = engine)
 metadata = MetaData(engine)
@@ -65,10 +64,26 @@ namsor = Table("ght_namsor_s", metadata_n, autoload=True)
 conns_n = engine_n.connect()
 session_n = Session_n()
 
+gender_f = open("data/gender.csv")
+line = gender_f.readline()
+line = gender_f.readline()
+user_genders = {}
+while len(line):
+  parts = line.strip().split(",")
+  user_genders[parts[0]] = parts[-1]
+  line = gender_f.readline()
+gender_f.close()
+
+def get_merged_id(re_alias, aid):
+  if aid in re_alias:
+    return re_alias[aid]
+  return aid
+
 failed = open("u_failed", "w")
 out = open("u_out", "w")
 #for p_index, p in enumerate(pids):
 def get_info(u):
+  print u
   # if we don't have the user's project list, it means that this author has only
   # contributed to large projects which we do not include in our model.
   if u not in cont_projs_dict:
@@ -82,12 +97,21 @@ def get_info(u):
   except:
     aliases = tuple([u])
 
+
   # get user basic info
   r = session_n.query(namsor).filter(namsor.c.id == u)
   u_info = r.first()
-  u_gender = u_info.gender
+
   u_email = u_info.email
   u_login = u_info.login
+  try:
+    u_gender = user_genders[str(u)]
+    if u_gender == 1:
+      u_gender = "Female"
+    elif u_gender == -1:
+      u_gender = "Male"
+  except:
+    u_gender = u_info.gender
 
   # get user ages and active ages, niche width
   u_projs = cont_projs_dict[u]
@@ -98,7 +122,9 @@ def get_info(u):
   for i in range(36):
     follower_win.append(set())
 
-  r = session.query(followers).filter(followers.c.user_id.in_(aliases))
+  r = session.query(followers).filter(followers.c.user_id.in_(aliases),
+                                      followers.c.created_at >= begin,
+                                      followers.c.created_at <= end)
 
   for rr in r.all():
     win = floor((rr.created_at.month-1)/3+1)+ (rr.created_at.year-2008)*4
@@ -116,8 +142,6 @@ def get_info(u):
   for i in range(36):
     commits_win[i] = 0 
   '''
-  begin = datetime.strptime("2008-01-01", "%Y-%m-%d")
-  end = datetime.strptime("2016-12-31", "%Y-%m-%d")
   r = session.query(commits).filter(commits.c.author_id.in_(aliases),
                                 commits.c.created_at >= begin,
                                 commits.c.created_at <= end)
@@ -170,6 +194,8 @@ def get_info(u):
     for lang in all_langs_list:
       u_languages.add(lang)
     u_dict["u_nichewidth"] = len(u_languages)
+    if len(u_languages) == 0:
+      u_dict["u_nichewidth"] = 1
 
     u_dicts.append(u_dict)
     #print proc_id, p, p_dict, datetime.now()
@@ -180,7 +206,7 @@ def get_info(u):
   #session.commit()
   conns.close()
   return u_dicts
-'''
+
 pool = Pool(num_proc)
 results = pool.map(get_info, uids)
 pool.close()
@@ -193,6 +219,7 @@ result_f.close()
 results = []
 for p in uids:
   results.append(get_info(p))
+'''
 
 results = [dict_item for dict_lists in results for dict_item in dict_lists]
 results = pd.DataFrame(results)

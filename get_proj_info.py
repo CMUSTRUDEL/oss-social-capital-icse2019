@@ -34,15 +34,6 @@ pids.sort()
 print "Number of projects", len(pids)
 
 # load contributors' projects
-# query:
-# user_projs_r = session.query(commits).filter( \
-#    commits.c.author_id.in_(aliases),
-#    commits.c.created_at >= begin,
-#    commits.c.created_at <= end,
-#    commits.c.project_id.isnot(None),
-#    commits.c.project_id != -1).distinct(commits.c.project_id)
-# dict key: 1 (user id)
-# dict value: [[], [], [], [28923L], [], [], [4121147L], [28923L], [2L, 28923L, 96621L]] (list of project ids)
 f = open("dict/contr_projs.dict")
 cont_projs_dict = pickle.load(f)
 f.close()
@@ -151,10 +142,10 @@ def get_info(p):
     contr_lens.append(len(contr_win[i]))
     new_contr_lens.append(len(new_contr_win[i]))
 
-  if max(contr_lens) > 1000:
+  if max(contr_lens) > 1500:
     # otherwise it woule take tooooo long to calculate team familiarity
-    big_repos.add(p)
     return []   
+  #print proc_id, "contr", p, contr_lens
 
   # watchers
   cur_stars = watchers.loc[watchers["project_id"].isin(forks)]
@@ -166,6 +157,11 @@ def get_info(p):
     cur_win = int(cur_stars.iloc[i][["window"]])
     if cur_win > 0 and cur_win < 37:  
       stars_count[cur_win-1] = int(cur_stars.iloc[i][["sum"]])
+  #print proc_id, "star", p, stars_count
+
+  # get users' projects per window to calculate team familiarity, lang
+  # diversity, and recurring cohesion
+  #contr_list_win = get_user_dict(p, helper.session)
 
   # create dataframe
   p_dicts = []
@@ -176,10 +172,10 @@ def get_info(p):
     p_dict["p_id"] = np.int64(p)
     p_dict["p_lang"] = p_lang
     p_dict["p_owner"] = int(p_owner)
-    p_dict["p_age"] = act_win - min(act_wins)
+    p_dict["p_age"] = act_win - min(act_wins) # 0 based
     p_dict["p_windows_active_to_date"] = win_index + 1
     p_dict["p_team_size"] = contr_lens[act_win]
-    p_dict["p_num_users_to_date"] = sum(new_contr_lens[:act_win+1])
+    p_dict["p_num_users_to_date"] = sum(new_contr_lens[:act_win])
     p_dict["p_num_stars"] = sum(stars_count[:act_win])
     p_dict["p_num_commits"] = num_commits_win[act_win]
     p_dict["p_num_commits_to_date"] = sum(num_commits_win[:act_win+1])
@@ -215,15 +211,40 @@ def get_info(p):
     #print proc_id, p, p_dict, datetime.now()
     out.write(str(p_dict)+",")
     out.write(str(datetime.now())+"\n")
+  #out.write("\n".join([str(p_d) for p_d in p_dicts])+"\n")
+  #results = pd.concat([results, pd.DataFrame(p_dicts)]) 
+  #session.commit()
+
   return p_dicts
 
+'''
+for i in range(6):
+  print "pid:", i*10000, (i+1)*10000
+  p_ids_sub = pids[(i-1)*10000:i*10000]
+  pool = Pool(num_proc)
+  results = []
+  results = pool.map(get_info, p_ids_sub)
+  pool.close()
+  pool.join()
+  result_f = open("result_f"+str(i), "wb")
+  pickle.dump(results, result_f)
+  result_f.close()
+
+
+  results = [dict_item for dict_lists in results for dict_item in dict_lists]
+  results = pd.DataFrame(results)
+  results.to_csv("data/proj_results"+str(i)+".csv", index = False)
+'''
+
+
 results = []
-num_iter = len(pids) / 10000 
+iter_size = 5000
+num_iter = len(pids) / iter_size 
 print len(pids)
 for i in range(num_iter+1):
   pool = Pool(num_proc)
-  print datetime.now(), (i+1)*10000
-  results_i = pool.map(get_info, pids[i*10000:(i+1)*10000])
+  print datetime.now(), (i+1)*iter_size
+  results_i = pool.map(get_info, pids[i*iter_size:(i+1)*iter_size])
   results_i = [dict_item for dict_lists in results_i for dict_item in dict_lists]
   results.extend(results_i)
   pool.close()
@@ -232,5 +253,11 @@ for i in range(num_iter+1):
   pickle.dump(results_i, result_f)
   result_f.close()
 
+'''
+results = []
+for p in pids:
+  results.append(get_info(p))
+'''
+
 results = pd.DataFrame(results)
-results.to_csv("data/results_proj.csv", index = False, encoding = "utf-8")
+results.to_csv("data/results_proj_big.csv", index = False, encoding = "utf-8")

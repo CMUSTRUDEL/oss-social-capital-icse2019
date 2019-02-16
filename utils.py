@@ -6,6 +6,7 @@ import os
 import pandas as pd
 import pickle
 import random
+
 f = open("dict/alias_map_b.dict")
 alias_map = pickle.load(f)
 f.close()
@@ -18,8 +19,8 @@ time_format = "%Y-%m-%d %H:%M:%S"
 ghbegin = "2008-01-01 0:0:0"
 ghend = "2016-12-31 23:59:59"
 pswd = os.environ["SQLPW"]
-url = "mysql://sophie:"+pswd+"@localhost/ghtorrent?charset=utf8mb4"
-engine = create_engine(url, pool_pre_ping = True)
+url = "mysql://sophie:"+pswd+"@localhost/ghtorrent-2018-03?charset=utf8mb4"
+engine = create_engine(url)
 Session = sessionmaker(bind = engine)
 metadata = MetaData(engine)
 commits = Table('commits', metadata, autoload=True)
@@ -116,8 +117,6 @@ def get_fork_map(roots, session, projects):
         commits.c.author_id != 6059).distinct()
       all_contrs = len(r.all())
       if all_contrs * 1.0 / num_forks >= 0.001 and all_contrs <= 1500:
-        big_repo.write(str(root) + "\n")
-        big_repo_list.append(root)
         forks = [root]
         for fork in forks_sql_r:
           forks.append(fork.id)
@@ -183,7 +182,7 @@ def get_user_projs(session, projects, commits, aliases, wind, big_repos):
     if u_root not in big_repos:
       user_projs_roots.add(u_root)
 
-  # return the list of projects for thsi user in this window
+  # return the list of projects for this user in this window
   return list(user_projs_roots)
 
 def get_proj_users_count(cs, root_forks, proj_user_count):
@@ -276,3 +275,41 @@ def save_user_projs_all_win(cs, contr_projs, big_repos):#session, projects, comm
     session.rollback()
   finally:
     session.close()
+
+def get_watcher_num(pids):
+  engine = create_engine(url, pool_pre_ping = True)
+  Session = sessionmaker(bind = engine)
+  metadata = MetaData(engine)
+  watchers = Table('watchers', metadata, autoload=True)
+  projects = Table('projects', metadata, autoload=True)
+  conn = engine.connect()
+  session = Session()
+
+  watchers_num = []
+  begin = datetime.strptime(ghbegin, time_format)
+  end = datetime.strptime(ghend, time_format)
+  for pid in pids:
+    cur_watcher = {}
+    cur_watcher["pid"] = pid
+    for i in range(1, 37):
+      cur_watcher[i] = 0
+    r = session.query(projects.c.id).filter(projects.c.forked_from == pid)
+    response = r.all()
+    if len(response) == 0:
+      repos = [pid]
+    else:
+      repos = [int(rr[0]) for rr in response] 
+      repos.append(pid)
+  
+    # get 
+    r = session.query(watchers).filter(watchers.c.repo_id.in_(repos),
+                                        watchers.c.created_at > begin,
+                                        watchers.c.created_at < end)
+    for rr in r.all():
+      win = floor((rr.created_at.month-1)/3+1)+ (rr.created_at.year-2008)*4
+      win = int(win)
+      cur_watcher[win] += 1
+    watchers_num.append(cur_watcher)
+  
+  results = pd.DataFrame(watchers_num)
+  results.to_csv("data/watchers_monthly_counts_win.csv", index = False, encoding = "utf-8")
