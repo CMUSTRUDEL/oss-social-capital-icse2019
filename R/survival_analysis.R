@@ -12,7 +12,7 @@ library(survminer)
 
 
 ## Read data
-surv_data <- read.csv("surv_data.csv", sep=",", stringsAsFactors = FALSE) 
+surv_data <- read.csv("../data/surv_data.csv", sep=",", stringsAsFactors = FALSE) 
 table(surv_data$u_gender)
 ## Preliminaries
 
