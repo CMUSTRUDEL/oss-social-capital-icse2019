@@ -122,7 +122,7 @@ The csv file consists of 34 columns. Those with prefix "u_" are information abou
 - `u_projects_to_date` is the number of projects to which the user had submitted commits up to that three-month window.
 - `u_temp_failure` is a binary indicator of whether the user had been inactive for half a year (2 three-month windows).
 - `u_temp_failure_1_year` is a binary indicator of whether the user had been inactive for a year (4 three-month windows).
-- `u_window_active_to_date` is the number of three-month windows during whith the user had submitted commits.
+- `u_window_active_to_date` is the number of three-month windows during which the user had submitted commits.
 - `window_num` represents the current three-month window. 2008 Jan to 2008 Mar will be `window_num = 1`.
 - `owner_company` is a binary indicator of whether the owner of the repository displays their company in their profile.
 - `owner_gender` is the repository owners' genders, with -1 representing male, 1 female, and 0 unknown.
